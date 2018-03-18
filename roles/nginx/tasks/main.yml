@@ -1,0 +1,47 @@
+---
+- name: install certbot
+  apt:
+    name: certbot
+
+# Nginx config and certificates
+- name: create host nginx folder
+  file:
+    state: directory
+    path: "{{nginx_folder}}"
+- name: copy dhparam
+  copy:
+    src: ffdhe4096
+    dest: "{{nginx_folder}}/"
+- name: install nginx conf
+  template:
+    src: nginx.conf
+    dest: "{{nginx_folder}}/"
+
+# Nginx
+- name: stop nginx container
+  docker_container:
+    name: nginx
+    state: absent
+  ignore_errors: yes
+  register: container_stop
+  until: not container_stop.get("failed")
+  retries: 5
+  delay: 10
+- name: start nginx container
+  docker_container:
+    name: nginx
+    image: nginx:{{nginx_version}}
+    pull: yes
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{project_name}}"
+        aliases:
+          - nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "{{nginx_folder}}/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "{{nginx_folder}}/ffdhe4096:/etc/nginx/ssl/ffdhe4096:ro"
+      - "/etc/letsencrypt:/etc/letsencrypt:ro"

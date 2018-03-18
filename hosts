@@ -1,0 +1,5 @@
+[all]
+metrics.maurin.io
+
+[all:vars]
+ansible_user=root

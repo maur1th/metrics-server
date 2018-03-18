@@ -1,0 +1,30 @@
+---
+- hosts: all
+  gather_facts: no
+  become: yes
+
+  pre_tasks:
+    - name: install python if missing
+      raw: test -e /usr/bin/python || (apt update && apt install -y python-minimal)
+      changed_when: no
+    - setup:  # aka gather_facts
+    - name: get private ip address
+      shell: ip addr show eth0 | grep 'inet\b' | awk '{print $2}' | cut -d/ -f1
+      register: command_output
+      changed_when: no
+    - set_fact:
+        private_ip: "{{ command_output.stdout }}"
+
+  roles:
+    - common
+    - nginx
+    - metrics
+
+  tasks:
+    # Reclaim hard drive space
+    - name: clean outdated docker images & stopped containers
+      shell: >
+        docker system prune --force &&
+        docker rmi $(docker images --quiet --filter dangling=true)
+      failed_when: False
+...
