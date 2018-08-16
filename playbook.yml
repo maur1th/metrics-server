@@ -17,8 +17,10 @@
 
   roles:
     - common
-    - nginx
     - metrics
+    - name: certbot
+      domain: metrics.maurin.io
+    - nginx
 
   tasks:
     # Reclaim hard drive space
