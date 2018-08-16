@@ -2,6 +2,7 @@
 targets:
   - "'{{private_ip}}:9100'"
   - "'home.maurin.io:9100'"
+  - "'geekattitude.org:9100'"
 
 metrics_folder: "{{ansible_env.HOME}}/metrics"
 
