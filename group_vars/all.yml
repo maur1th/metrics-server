@@ -2,8 +2,8 @@
 project_name: metrics
 
 # Versions
-docker_version: 17.12
-nginx_version: 1.13-alpine
-prometheus_version: latest  # until they have a better tagging policy
-grafana_version: latest     # ...
+docker_version: "17.12"
+nginx_version: "1.13-alpine"
+prometheus_version: v2.3.2  # until they have a better tagging policy
+grafana_version: "5.2.0"
 ...
